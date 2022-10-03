@@ -1,9 +1,10 @@
 {
-    "compilerOptions": {
-        "target": "ES2019",
-        "module": "commonjs",
-        "outDir": "dist",
-        "esModuleInterop": true
-    },
-    "include": ["**/*.ts"]
+	"extends": "@sindresorhus/tsconfig",
+	"compilerOptions": {
+		"module": "commonjs",
+		"jsx": "react",
+		"esModuleInterop": true,
+		"outDir": "dist"
+	},
+	"include": ["src"]
 }
