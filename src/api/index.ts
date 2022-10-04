@@ -26,22 +26,92 @@ export default class SlackerAPI {
 
     static async getEndpoint (): Promise<string> {
         if (!this._endpoint) {
-            const response = await axios.post(
-                'https://slack.com/api/apps.connections.open', {}, {
+            try {
+                const response = await axios.post(
+                    'https://slack.com/api/apps.connections.open', {}, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: 'Bearer ' + this._config.appToken,
+                        }
+                    }
+                );
+                if (!response.data.ok) {
+                    console.error('Error getting API endpoint:', response.data.error);
+                    return '';
+                }
+                this._endpoint = response.data.url;
+            } catch (e) {
+                console.error(e);
+                return '';
+            }
+        }
+        return this._endpoint;
+    }
+
+    static async getUsers (): Promise<Slacker.User[]> {
+        try {
+            const response = await axios.get(
+                'https://slack.com/api/users.list', {
                     headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: 'Bearer ' + this._config.appToken,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Authorization: 'Bearer ' + this._config.apiToken,
                     }
                 }
             );
             if (!response.data.ok) {
-                console.error('Error getting API endpoint');
-                console.error(response.data.error);
-                return '';
+                console.error('Error gettting users:', response.data.error);
+                return [];
             }
-            this._endpoint = response.data.url;
+            return response.data.members.map((member: any) => {
+                return {
+                    id: member.id,
+                    teamId: member.team_id,
+                    deleted: member.deleted,
+                    color: member.color,
+                    name: member.name,
+                    realName: member.profile.real_name,
+                    displayName: member.profile.display_name,
+                    timezone: member.tz,
+                    statusText: member.profile.status_text, 
+                    statusEmoji: member.profile.status_emoji, 
+                    email: member.profile.email,
+                    isAdmin: member.isAdmin,
+                    isBot: member.isBot
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            return [];
         }
-        return this._endpoint;
+    }
+
+    static async getChannels (): Promise<Slacker.Channel[]> {
+        try {
+            const response = await axios.get(
+                'https://slack.com/api/conversations.list', {
+                    headers: {
+                        'Content-Type': 'application/www-form-urlencoded',
+                        Authorization: 'Bearer ' + this._config.apiToken
+                    }
+                }
+            );
+            if (!response.data.ok) {
+                console.error('Error getting channels:', response.data.error);
+                return [];
+            }
+            return response.data.channels.map((channel: any) => {
+                return {
+                    id: channel.id,
+                    createdBy: channel.creator,
+                    name: channel.name,
+                    topic: channel.topic.value,
+                    purpose: channel.topic.value
+                }
+            });
+        } catch (e) {
+            console.error(e)
+            return []
+        }
     }
 
     static async openSocket (callback: (message: Slacker.MessageEvent) => void) {
@@ -74,5 +144,12 @@ export default class SlackerAPI {
                 message: data.payload.event.text as string,
             })
         }
+    }
+
+    static closeSocket () {
+        if (!this._socket) {
+            return;
+        }
+        this._socket.close();
     }
 }

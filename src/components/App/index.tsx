@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useApp, useInput, Box, Text } from 'ink';
+import { Box, useApp } from 'ink';
+import NavBar from '../NavBar'
 import SlackerAPI from '../../api'
 
-interface Props {
-}
+const App: React.FC = () => {
 
-const App: React.FC<Props> = ({
-}) => {
-
-    // TODO grab all users and channels in workspace
     // TODO grab last 100 or so messages on load with a useEffect hook
+    // @ts-ignore
     const [messageHistory, setMessageHistory] = useState<Slacker.MessageEvent[]>([]);
+    const [channels, setChannels] = useState<Slacker.Channel[]>([]);
+    // @ts-ignore
+    const [users, setUsers] = useState<Slacker.User[]>([]);
 
     const { exit } = useApp()
 
@@ -20,16 +20,23 @@ const App: React.FC<Props> = ({
         });
     }
 
-    // @ts-ignore
-    useInput((input, key) => {
-        if (input === 'q') {
-            // TODO clear terminal when exiting
-            exit();
-        }
-    });
+    const quitSlacker = () => {
+        exit();
+        SlackerAPI.closeSocket();
+    }
 
     useEffect(() => {
+        const getUsers = async () => {
+            const slackUsers = await SlackerAPI.getUsers();
+            setUsers(slackUsers);
+        }
+        const getChannels = async () => {
+            const slackChannels = await SlackerAPI.getChannels();
+            setChannels(slackChannels);
+        }
         SlackerAPI.openSocket(handleNewMessage);
+        getUsers();
+        getChannels();
     }, [])
 
     return (
@@ -37,14 +44,12 @@ const App: React.FC<Props> = ({
             height={process.stdout.rows}
             width={process.stdout.columns}
             borderStyle="single"
+            flexDirection="column"
         >
-            {messageHistory.map((message) => {
-                return (
-                    <Box width="100%">
-                        <Text>{message.message}</Text>
-                    </Box>
-                )
-            })}
+            <NavBar
+                channels={channels}
+                exit={quitSlacker}
+            />
         </Box>
     )
 };

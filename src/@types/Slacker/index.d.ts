@@ -6,8 +6,25 @@ namespace Slacker {
         appToken: string | undefined;
     }
 
+    interface User {
+        id: string;
+        teamId: string;
+        deleted: boolean;
+        color: string;
+        name: string;
+        realName: string;
+        displayName: string;
+        timezone: string;
+        statusText: string;
+        statusEmoji: string;
+        email: string;
+        isAdmin: boolean;
+        isBot: boolean;
+    }
+
     interface Channel {
         id: string;
+        createdBy: string;
         name: string;
         topic: string;
         focus: string;
