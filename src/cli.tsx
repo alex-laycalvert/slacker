@@ -1,24 +1,9 @@
 import React from 'react';
 import {render} from 'ink';
-import meow from 'meow';
 import App from './components/App';
 
-const cli = meow(`
-	Usage
-	  $ slacker
+const start = async () => {
+    render(<App />);
+}
 
-	Options
-		--name  Your name
-
-	Examples
-	  $ slacker --name=Jane
-	  Hello, Jane
-`, {
-	flags: {
-		name: {
-			type: 'string'
-		}
-	}
-});
-
-render(<App name={cli.flags.name}/>);
+start()
