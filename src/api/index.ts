@@ -114,6 +114,36 @@ export default class SlackerAPI {
         }
     }
 
+    static async getChannelHistory (channelId: string): Promise<Slacker.MessageEvent[]> {
+        try {
+            const response = await axios.get(
+                'https://slack.com/api/conversations.history', {
+                    headers: {
+                        'Content-Type': 'application/www-form-urlencoded',
+                        Authorization: 'Bearer ' + this._config.apiToken
+                    },
+                    params: {
+                        channel: channelId
+                    }
+                }
+            );
+            if (!response.data.ok) {
+                console.error('Error getting channel history:', response.data.error);
+                return [];
+            }
+            return response.data.messages.map((message: any) => {
+                return {
+                    timestamp: message.ts,
+                    userId: message.user,
+                    message: message.text
+                }
+            });
+        } catch (e) {
+            console.error('Error getting channel history:', e);
+            return [];
+        }
+    }
+
     static async openSocket (callback: (message: Slacker.MessageEvent) => void) {
         if (!this._endpoint) {
             await SlackerAPI.getEndpoint();
@@ -136,7 +166,6 @@ export default class SlackerAPI {
             this._socket.send(ack)
             callback({
                 timestamp: data.payload.event.ts as string,
-                id: data.payload.event.client_msg_id as string,
                 userId: data.payload.event.user as string,
                 teamId: data.payload.event.team as string,
                 channelId: data.payload.event.channel as string,

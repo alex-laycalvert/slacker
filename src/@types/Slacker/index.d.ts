@@ -32,11 +32,10 @@ namespace Slacker {
 
     interface MessageEvent {
         timestamp: string;
-        id: string;
         userId: string;
-        teamId: string;
-        channelId: string;
-        channelType: string;
+        teamId?: string;
+        channelId?: string;
+        channelType?: string;
         message: string;
     }
 }

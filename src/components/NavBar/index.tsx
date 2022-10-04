@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useFocus, useInput } from 'ink';
 
+const QUIT = 'q';
+const COLLAPSE = 'c';
 const MOVE_UP = 'k';
 const MOVE_DOWN = 'j';
 
 interface Props {
     channels: Slacker.Channel[];
+    selectChannel: (id: string) => void;
+    currentChannelId: string | null | undefined;
     exit: () => void;
     height?: number | string;
     width?: number | string;
@@ -13,16 +17,17 @@ interface Props {
 
 const NavBar: React.FC<Props> = ({
     channels,
+    selectChannel,
+    currentChannelId,
     exit,
     height,
     width,
 }) => {
-
     if (!height) {
         height = '100%';
     }
     if (!width) {
-        width = 20;
+        width = '15%';
     }
 
     const { isFocused } = useFocus({
@@ -33,9 +38,6 @@ const NavBar: React.FC<Props> = ({
     useInput((input, key) => {
         if (isFocused) {
             switch (input) {
-                case 'q':
-                    exit();
-                    break;
                 case MOVE_UP:
                     if (selectedChannel - 1 < 0) {
                         setSelectedChannel(channels.length - 1)
@@ -50,25 +52,32 @@ const NavBar: React.FC<Props> = ({
                         setSelectedChannel(selectedChannel + 1);
                     }
                     break;
+                case COLLAPSE:
+                    setChannelsCollapsed(!channelsCollapsed)
+                    break;
+                case QUIT:
+                    exit();
+                    break;
             }
             if (key.return) {
-                setCurrentChannel(selectedChannel);
+                const selecteChannelId = channels[selectedChannel]?.id;
+                if (!selecteChannelId) return;
+                selectChannel(selecteChannelId);
             }
         }
     });
 
-    // @ts-ignore
     const [channelsCollapsed, setChannelsCollapsed] = useState<boolean>(false);
     const [selectedChannel, setSelectedChannel] = useState<number>(-1);
-    const [currentChannel, setCurrentChannel] = useState<number>(-1);
 
     useEffect(() => {
-    }, [channels])
+    }, [])
         
     return (
         <Box
             height={height}
             width={width}
+            margin={0}
             paddingY={3}
             paddingX={1}
             flexDirection="column"
@@ -80,11 +89,11 @@ const NavBar: React.FC<Props> = ({
                 !channelsCollapsed &&
                 channels.map((channel, i) => {
                     const isSelectedChannel = i === selectedChannel;
-                    const isCurrentChannel = i === currentChannel;
+                    const isCurrentChannel = channel.id === currentChannelId;
                     const channelIcon = isCurrentChannel ? '   ' : '  ';
                     return (
                         <Text
-                            color={isSelectedChannel ? 'magenta' : 'white'}
+                            color={isSelectedChannel && isFocused ? 'magenta' : 'white'}
                             bold={isSelectedChannel || isCurrentChannel}
                         >
                               {channelIcon}#{channel.name}

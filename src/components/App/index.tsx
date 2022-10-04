@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, useApp } from 'ink';
 import NavBar from '../NavBar'
 import SlackerAPI from '../../api'
+import ChatDisplay from '../ChatDisplay/index';
 
 const App: React.FC = () => {
 
@@ -9,8 +10,8 @@ const App: React.FC = () => {
     // @ts-ignore
     const [messageHistory, setMessageHistory] = useState<Slacker.MessageEvent[]>([]);
     const [channels, setChannels] = useState<Slacker.Channel[]>([]);
-    // @ts-ignore
     const [users, setUsers] = useState<Slacker.User[]>([]);
+    const [currentChannel, setCurrentChannel] = useState<Slacker.Channel | null>(null)
 
     const { exit } = useApp()
 
@@ -18,6 +19,12 @@ const App: React.FC = () => {
         setMessageHistory((prev) => {
             return [...prev, messageEvent];
         });
+    }
+
+    const selectChannel = (id: string) => {
+        const slackChannel = channels.find((c) => c.id === id);
+        if (!slackChannel) return;
+        setCurrentChannel(slackChannel);
     }
 
     const quitSlacker = () => {
@@ -44,11 +51,17 @@ const App: React.FC = () => {
             height={process.stdout.rows}
             width={process.stdout.columns}
             borderStyle="single"
-            flexDirection="column"
         >
             <NavBar
                 channels={channels}
+                selectChannel={selectChannel}
+                currentChannelId={currentChannel?.id}
                 exit={quitSlacker}
+            />
+            <ChatDisplay
+                channel={currentChannel}
+                exit={quitSlacker}
+                users={users}
             />
         </Box>
     )
