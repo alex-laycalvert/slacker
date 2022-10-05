@@ -24,7 +24,7 @@ const ChatDisplay: React.FC<Props> = ({
         height = '100%';
     }
     if (!width) {
-        width = '85%';
+        width = '100%';
     }
 
     const { isFocused } = useFocus();

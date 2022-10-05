@@ -3,6 +3,7 @@ import { Box, useApp } from 'ink';
 import NavBar from '../NavBar'
 import SlackerAPI from '../../api'
 import ChatDisplay from '../ChatDisplay/index';
+import ChatType from '../ChatType/index';
 
 const App: React.FC = () => {
 
@@ -19,6 +20,10 @@ const App: React.FC = () => {
         setMessageHistory((prev) => {
             return [...prev, messageEvent];
         });
+    }
+
+    const sendMessage = (message: string) => {
+        console.log(message)
     }
 
     const selectChannel = (id: string) => {
@@ -58,11 +63,22 @@ const App: React.FC = () => {
                 currentChannelId={currentChannel?.id}
                 exit={quitSlacker}
             />
-            <ChatDisplay
-                channel={currentChannel}
-                exit={quitSlacker}
-                users={users}
-            />
+            <Box
+                height="100%"
+                width="85%"
+                flexDirection="column"
+            >
+                <ChatDisplay
+                    height="90%"
+                    channel={currentChannel}
+                    exit={quitSlacker}
+                    users={users}
+                />
+                <ChatType
+                    height="10%"
+                    sendMessage={sendMessage}
+                />
+            </Box>
         </Box>
     )
 };

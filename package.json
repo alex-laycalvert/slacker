@@ -7,17 +7,18 @@
 		"node": ">=10"
 	},
 	"scripts": {
-		"build": "tsc && chmod +x dist/cli.js",
-		"start": "npm run build && node dist/cli.js",
+		"build": "tsc && chmod +x dist/index.js",
+		"start": "npm run build && node dist/index.js",
 		"pretest": "npm run build",
 		"test": "xo && ava"
 	},
 	"files": [
-		"dist/cli.js"
+		"dist/index.js"
 	],
 	"dependencies": {
 		"axios": "^0.27.2",
 		"ink": "^3.2.0",
+		"ink-text-input": "^4.0.3",
 		"meow": "^9.0.0",
 		"react": "^17.0.2"
 	},
