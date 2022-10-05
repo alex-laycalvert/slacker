@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, useApp } from 'ink';
+import useStdoutDimensions from 'ink-use-stdout-dimensions';
 import NavBar from '../NavBar'
 import SlackerAPI from '../../api'
 import ChatDisplay from '../ChatDisplay/index';
@@ -7,7 +8,6 @@ import ChatType from '../ChatType/index';
 
 const App: React.FC = () => {
 
-    // TODO grab last 100 or so messages on load with a useEffect hook
     // @ts-ignore
     const [messageHistory, setMessageHistory] = useState<Slacker.MessageEvent[]>([]);
     const [channels, setChannels] = useState<Slacker.Channel[]>([]);
@@ -15,6 +15,8 @@ const App: React.FC = () => {
     const [currentChannel, setCurrentChannel] = useState<Slacker.Channel | null>(null)
 
     const { exit } = useApp()
+
+    const [columns, rows] = useStdoutDimensions();
 
     const handleNewMessage = (messageEvent: Slacker.MessageEvent) => {
         setMessageHistory((prev) => {
@@ -53,8 +55,8 @@ const App: React.FC = () => {
 
     return (
         <Box
-            height={process.stdout.rows}
-            width={process.stdout.columns}
+            height={rows}
+            width={columns}
             borderStyle="single"
         >
             <NavBar
@@ -69,13 +71,13 @@ const App: React.FC = () => {
                 flexDirection="column"
             >
                 <ChatDisplay
-                    height="90%"
+                    height="85%"
                     channel={currentChannel}
                     exit={quitSlacker}
                     users={users}
                 />
                 <ChatType
-                    height="10%"
+                    height="15%"
                     sendMessage={sendMessage}
                 />
             </Box>
