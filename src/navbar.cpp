@@ -3,12 +3,12 @@
 
 #include "navbar.hpp"
 
-#include <ncurses.h>
-
 NavBar::NavBar(const int heightPercent, const int widthPercent,
                const vector<Channel> channels)
     : Component(heightPercent, widthPercent, false) {
     this->channels = channels;
+    this->numChannels = channels.size();
+    this->selectedChannel = 0;
 };
 
 void NavBar::render(const bool focused, const int rows, const int cols,
@@ -28,11 +28,17 @@ void NavBar::render(const bool focused, const int rows, const int cols,
     int rowPadding = 1;
     int currentLine = 2;
     mvwprintw(this->window, currentLine, rowPadding + 1, "Channels:");
-    for (int i = 0; i < (int)this->channels.size(); i++) {
-        mvwprintw(this->window, ++currentLine, rowPadding + 1, "%s",
-                  this->channels[i].name.c_str());
+    for (int i = 0; i < this->numChannels; i++) {
+        if (i == selectedChannel) {
+            wattron(this->window, COLOR_PAIR(FOCUSED_COLOR_PAIR));
+            mvwprintw(this->window, ++currentLine, rowPadding + 2, ">#%s",
+                      this->channels[i].name.c_str());
+            wattroff(this->window, COLOR_PAIR(FOCUSED_COLOR_PAIR));
+        } else {
+            mvwprintw(this->window, ++currentLine, rowPadding + 2, "#%s",
+                      this->channels[i].name.c_str());
+        }
     }
-
     wrefresh(this->window);
 }
 

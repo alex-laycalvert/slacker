@@ -5,10 +5,16 @@
 
 #include <ncurses.h>
 
+#include "api.hpp"
 #include "slacker.hpp"
 
-ChatDisplay::ChatDisplay(const int heightPercent, const int widthPercent)
-    : Component(heightPercent, widthPercent, false) {}
+ChatDisplay::ChatDisplay(const int heightPercent, const int widthPercent,
+                         Channel channel)
+    : Component(heightPercent, widthPercent, false) {
+    this->channel = channel;
+    SlackerAPI *api = SlackerAPI::getSlackerAPI();
+    this->messages = api->getChannelMessages(this->channel.id);
+}
 
 void ChatDisplay::render(const bool focused, const int rows, const int cols,
                          const int rowOffset, const int colOffset) {
@@ -22,7 +28,12 @@ void ChatDisplay::render(const bool focused, const int rows, const int cols,
     }
     box(this->window, 0, 0);
     wattroff(this->window, COLOR_PAIR(FOCUSED_COLOR_PAIR));
-    mvwprintw(this->window, 1, 1, "CHAT DISPLAY");
+    for (int i = 0; i < (int)this->messages.size(); i++) {
+        mvwprintw(this->window, i + 1, 2, "%s> %s",
+                  this->messages.at(i).userId.c_str(),
+                  this->messages.at(i).text.c_str());
+        if (i + 1 >= height - 1) break;
+    }
     wrefresh(this->window);
 }
 

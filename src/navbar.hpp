@@ -21,6 +21,8 @@ class NavBar : public Component {
 
    private:
     vector<Channel> channels;
+    int numChannels;
+    int selectedChannel;
 };
 
 #endif // NAVBAR_HPP_

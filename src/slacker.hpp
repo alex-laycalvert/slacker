@@ -19,8 +19,7 @@ typedef struct channel_t {
 
 typedef struct message_t {
     string userId;
-    string channelId;
-    string message;
+    string text;
     string time;
 } Message;
 

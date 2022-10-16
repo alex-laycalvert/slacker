@@ -13,7 +13,8 @@ using std::vector;
 
 class ChatDisplay : public Component {
    public:
-    ChatDisplay(const int heightPercent, const int widthPercent);
+    ChatDisplay(const int heightPercent, const int widthPercent,
+                Channel channel);
     void render(const bool focused, const int rows, const int cols,
                 const int rowOffset, const int colOffset);
     void sendInput(const char input);
@@ -21,6 +22,7 @@ class ChatDisplay : public Component {
     void addMessage(Message message) { this->messages.push_back(message); };
 
    private:
+    Channel channel;
     vector<Message> messages;
 };
 

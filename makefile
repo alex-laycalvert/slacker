@@ -1,7 +1,7 @@
 # alex-laycalvert
 # https://github.com/alex-laycalvert/slacker
 
-CFLAGS=-std=c++20 -lncurses -lwebsockets
+CFLAGS=-std=c++20 -L/usr/local/opt/openssl@3/lib -I/usr/local/opt/openssl@3/include -lncurses -lcurl
 
 l1t:
 	mkdir -p ./build
