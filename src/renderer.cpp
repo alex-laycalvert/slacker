@@ -22,8 +22,8 @@ void Renderer::addComponent(Component *component) {
 void Renderer::render() {
     bool rendering = true;
     int c;
+    refresh();
     while (rendering) {
-        refresh();
         getmaxyx(stdscr, this->rows, this->cols);
         int currentRowOffset = 0;
         int currentColOffset = 0;

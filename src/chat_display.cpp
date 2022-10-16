@@ -29,6 +29,7 @@ void ChatDisplay::render(const bool focused, const int rows, const int cols,
     box(this->window, 0, 0);
     wattroff(this->window, COLOR_PAIR(FOCUSED_COLOR_PAIR));
     for (int i = 0; i < (int)this->messages.size(); i++) {
+        mvwprintw(this->window, i + 1, 1, " ");
         mvwprintw(this->window, i + 1, 2, "%s> %s",
                   this->messages.at(i).userId.c_str(),
                   this->messages.at(i).text.c_str());
